@@ -382,21 +382,23 @@ function generateQR() {
     const n = matrix.length;
     const ms = canvasSize / n;
     const cta = document.getElementById('cta-text').value;
-    const ctaHeight = cta ? ms * 1.5 : 0;
+    const ctaSizeInput = parseInt(document.getElementById('cta-size').value);
+    const ctaSize = cta ? Math.max(16, canvasSize * (ctaSizeInput / 100)) : 0;
+    const ctaHeight = cta ? ctaSize * 1.8 : 0;
     const totalSize = canvasSize + quietZone * 2 * ms;
     const fullHeight = totalSize + ctaHeight;
 
     const container = document.getElementById('qr-container');
     container.innerHTML = '';
     const canvas = document.createElement('canvas');
-    canvas.width = fullHeight;
+    canvas.width = totalSize;
     canvas.height = fullHeight;
     container.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
     if (!transparent) {
         ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, fullHeight, fullHeight);
+        ctx.fillRect(0, 0, totalSize, fullHeight);
     }
 
     const offset = quietZone * ms;
@@ -434,14 +436,13 @@ function generateQR() {
     canvas.cta = cta;
 
     if (cta) {
-        const ctaSize = parseInt(document.getElementById('cta-size').value);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         const ctaFont = document.getElementById('cta-font').value;
-        ctx.translate(-offset, -offset);
         ctx.font = `bold ${ctaSize}px ${ctaFont}`;
         ctx.fillStyle = fg;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText(cta, fullHeight / 2, totalSize + ms * 0.3);
+        ctx.fillText(cta, totalSize / 2, totalSize + ctaSize * 0.3);
         canvas.ctaSize = ctaSize;
         canvas.ctaFont = ctaFont;
     }

@@ -197,6 +197,10 @@
                                 <input type="text" class="color-hex" id="fg-hex" value="#000000" oninput="syncHex('fg')"
                                     maxlength="7">
                             </div>
+                            <div class="contrast-indicator" id="contrast-indicator">
+                                <span class="contrast-bar"><span class="contrast-fill" id="contrast-fill"></span></span>
+                                <span class="contrast-val" id="contrast-val"></span>
+                            </div>
                         </div>
                         <div class="field">
                             <label>Background</label>
@@ -208,15 +212,57 @@
                                 <input type="text" class="color-hex" id="bg-hex" value="#ffffff" oninput="syncHex('bg')"
                                     maxlength="7">
                             </div>
+                            <div class="field" style="margin-top:8px">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-transparent"> Transparent
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Gradient</label>
+                        <select id="gradient-type">
+                            <option value="none">None</option>
+                            <option value="linear-h">Horizontal</option>
+                            <option value="linear-v">Vertical</option>
+                            <option value="linear-d">Diagonal</option>
+                            <option value="radial">Radial</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Quiet Zone (padding)</label>
+                        <div class="slider-wrap">
+                            <input type="range" id="quiet-zone" min="0" max="8" value="4"
+                                oninput="document.getElementById('quiet-zone-val').textContent=this.value">
+                            <span class="slider-val" id="quiet-zone-val">4</span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Color Presets</label>
+                        <div class="preset-grid">
+                            <button class="preset-btn" onclick="applyPreset('#000000','#ffffff')" style="background:#000000;color:#fff">B/W</button>
+                            <button class="preset-btn" onclick="applyPreset('#1a1a2e','#ffffff')" style="background:#1a1a2e;color:#fff">Navy</button>
+                            <button class="preset-btn" onclick="applyPreset('#006400','#ffffff')" style="background:#006400;color:#fff">Green</button>
+                            <button class="preset-btn" onclick="applyPreset('#8b0000','#ffffff')" style="background:#8b0000;color:#fff">Red</button>
+                            <button class="preset-btn" onclick="applyPreset('#000046','#ffffff')" style="background:#000046;color:#fff">Blue</button>
+                            <button class="preset-btn" onclick="applyPreset('#1e3c72','#ffffff')" style="background:#1e3c72;color:#fff">Ocean</button>
+                            <button class="preset-btn" onclick="applyPreset('#ff9966','#333333')" style="background:#ff9966;color:#333">Peach</button>
+                            <button class="preset-btn" onclick="applyPreset('#11998e','#ffffff')" style="background:#11998e;color:#fff">Teal</button>
                         </div>
                     </div>
 
                     <div class="field">
                         <label>Size (px)</label>
                         <div class="slider-wrap">
-                            <input type="range" id="qr-size" min="128" max="512" step="8" value="300"
-                                oninput="document.getElementById('size-val').textContent=this.value">
+                            <input type="range" id="qr-size" min="128" max="4096" step="64" value="300"
+                                oninput="document.getElementById('size-val').textContent=this.value; checkDPIWarning()">
                             <span class="slider-val" id="size-val">300</span>
+                        </div>
+                        <div class="dpi-warning" id="dpi-warning" style="display:none">
+                            ⚠ For print (300 DPI), use at least 900px
                         </div>
                     </div>
 
@@ -228,6 +274,11 @@
                             <button class="toggle-btn active" onclick="setEC('Q',this)">Q</button>
                             <button class="toggle-btn" onclick="setEC('H',this)">H</button>
                         </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Call-to-Action Text</label>
+                        <input type="text" id="cta-text" placeholder="Scan to visit...">
                     </div>
                 </div>
 
@@ -262,9 +313,23 @@
                             <span class="slider-val" id="logo-radius-val">8%</span>
                         </div>
                     </div>
+                    <div class="field">
+                        <label>Logo Quiet Zone</label>
+                        <div class="slider-wrap">
+                            <input type="range" id="logo-quiet" min="0" max="4" value="2" step="0.5"
+                                oninput="document.getElementById('logo-quiet-val').textContent=this.value">
+                            <span class="slider-val" id="logo-quiet-val">2</span>
+                        </div>
+                    </div>
                 </div>
 
                 <button class="btn-generate" onclick="generateQR()">Generate QR Code</button>
+
+                <div class="preset-actions">
+                    <button class="btn-secondary" onclick="savePreset()">Save Preset</button>
+                    <button class="btn-secondary" onclick="document.getElementById('preset-file').click()">Load Preset</button>
+                    <input type="file" id="preset-file" accept=".json" style="display:none" onchange="loadPreset(event)">
+                </div>
             </div>
 
             <!-- Preview -->
@@ -278,7 +343,14 @@
                         </div>
                         <div id="qr-container"></div>
                     </div>
-                    <button class="btn-download" id="btn-download" onclick="downloadQR()">↓ Download PNG</button>
+                    <div class="download-row">
+                        <button class="btn-download" id="btn-download" onclick="downloadQR()">↓ Download</button>
+                        <select id="download-format" class="download-select">
+                            <option value="png">PNG</option>
+                            <option value="svg">SVG</option>
+                            <option value="jpeg">JPEG</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
